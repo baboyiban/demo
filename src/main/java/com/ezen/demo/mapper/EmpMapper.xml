@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.demo.mapper.EmpMapper">
+	<!-- list -->
+	<select id="getListEmp" resultType="com.ezen.demo.vo.Emp">
+		SELECT * FROM emp3 ORDER BY
+		empno
+	</select>
+	<select id="getListEmpByDeptno"
+		resultType="com.ezen.demo.vo.Emp" parameterType="Integer">
+		SELECT * FROM emp3
+		WHERE deptno=#{deptno} ORDER BY empno
+	</select>
+	<select id="getListEmpWithDname" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		SELECT empno, ename, e.deptno, d.dname FROM emp3 e INNER JOIN dept d
+		ON e.deptno = d.deptno
+		<where>
+			<if test="deptno != null">AND e.deptno = #{deptno}</if>
+			<if test="ename != null">AND e.ename = #{ename}</if>
+		</where>
+	</select>
+	<!-- detail -->
+	<select id="getListEmpByEmpno" resultType="com.ezen.demo.vo.Emp">
+		SELECT * FROM emp3
+		WHERE empno=#{empno}
+	</select>
+	<!-- empno -->
+	<select id="getEmpno" resultType="java.lang.Integer">
+		SELECT LAST_NUMBER FROM
+		all_sequences WHERE sequence_name = 'EMP_SEQ'
+	</select>
+	<!-- add -->
+	<insert id="addEmp" parameterType="com.ezen.demo.vo.Emp">
+		INSERT INTO emp3
+		(empno,ename,deptno,sal,hiredate) VALUES
+		(emp_seq.nextval,#{ename},#{deptno},#{sal},SYSDATE)
+	</insert>
+	<!-- delete -->
+	<delete id="deleteByEmpno" parameterType="com.ezen.demo.vo.Emp">
+		DELETE FROM emp3 WHERE
+		empno=#{empno}
+	</delete>
+	<!-- deptno -->
+	<select id="isDeptno" parameterType="java.lang.Integer"
+		resultType="java.lang.Integer">
+		SELECT deptno FROM dept WHERE deptno=#{deptno}
+	</select>
+	<!-- edit -->
+	<update id="editEmp" parameterType="com.ezen.demo.vo.Emp">
+		UPDATE emp3 SET
+		ename=#{ename}, deptno=#{deptno}, sal=#{sal} WHERE empno=#{empno}
+	</update>
+</mapper>

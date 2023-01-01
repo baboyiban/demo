@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezen.demo.mapper.BoardMapper">
+	<select id="getListBoard" resultType="com.ezen.demo.vo.Board">
+		SELECT * FROM board2
+	</select>
+	<select id="getBoard" resultType="com.ezen.demo.vo.Board"
+		parameterType="java.lang.Integer">
+		SELECT * FROM board2 WHERE num=#{num}
+	</select>
+	<select id="getListAttach" resultType="com.ezen.demo.vo.Attach"
+		parameterType="java.lang.Integer">
+		SELECT * FROM attach WHERE bnum=#{bnum}
+	</select>
+	<select id="getAttach" resultType="com.ezen.demo.vo.Attach"
+		parameterType="java.lang.Integer">
+		SELECT * FROM attach WHERE num=#{num}
+	</select>
+	<select id="getListBoardAndAttach" resultType="java.util.Map">
+		SELECT b.num as num, b.title as title, b.contents as contents, b.author as author , a.num as num, a.fname as fname, a.fsize as fsize
+		FROM board2 b FULL JOIN attach a
+		ON b.num = a.bnum
+	</select>
+	<!-- 선생님 -->
+	<insert id="saveBoard" parameterType="com.ezen.demo.vo.Board">
+		<!-- Board.num 에 시퀀스 값을 보관해서 사용할 필요가 있다면 아래처럼... <selectKey keyProperty="num" 
+			resultType="integer" order="BEFORE"> SELECT BOARD_SEQ.NEXTVAL FROM DUAL </selectKey> -->
+		INSERT INTO board2(num, title, contents, author)
+		VALUES(BOARD_SEQ.NEXTVAL, #{title}, #{contents}, #{author})
+	</insert>
+
+	<update id="saveAttach" parameterType="list">
+		INSERT INTO attach (num, bnum, fname, fsize)
+		SELECT ATTACH_SEQ.NEXTVAL
+		AS num, t.* FROM
+		(
+		<foreach collection="list" item="item" index="index"
+			separator="union all">
+			SELECT (SELECT MAX(num) FROM board2) AS bnum,
+			#{item.fname}, #{item.fsize}
+			FROM DUAL
+		</foreach>
+		) t
+	</update>
+	<!-- 선생님 -->
+</mapper>
